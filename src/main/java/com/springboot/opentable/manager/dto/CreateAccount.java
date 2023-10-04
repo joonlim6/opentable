@@ -1,6 +1,5 @@
 package com.springboot.opentable.manager.dto;
 
-import com.springboot.opentable.manager.domain.Manager;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
