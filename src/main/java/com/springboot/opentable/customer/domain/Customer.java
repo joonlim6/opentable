@@ -1,4 +1,4 @@
-package com.springboot.opentable.manager.domain;
+package com.springboot.opentable.customer.domain;
 
 import java.time.LocalDateTime;
 import javax.persistence.Entity;
@@ -17,13 +17,12 @@ import lombok.Setter;
 @AllArgsConstructor
 @Builder
 @Entity
-public class Manager {
+public class Customer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String email;
     private String password;
-    private Boolean isPartner;
     private LocalDateTime registeredAt;
 }

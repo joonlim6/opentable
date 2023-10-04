@@ -7,7 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-public class CreateAccount {
+public class SignUpManager {
 
     @Getter
     @Setter

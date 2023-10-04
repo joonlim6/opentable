@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 public class ManagerService {
     private final ManagerRepository managerRepository;
 
-    public ManagerDto createAccount(String email, String password, Boolean isPartner) {
+    public ManagerDto signUpManager(String email, String password, Boolean isPartner) {
         Long newId = managerRepository.findFirstByOrderByIdDesc()
             .map(manager -> manager.getId() + 1)
             .orElse(1L);

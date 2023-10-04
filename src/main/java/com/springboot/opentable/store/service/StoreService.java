@@ -22,7 +22,7 @@ public class StoreService {
             .orElseThrow();
 
         if(!manager.getIsPartner()) {
-            throw new RuntimeException("This manager is not a partner manager");
+            throw new RuntimeException("Logged in manager is not a partner");
         }
 
         Long newId = managerRepository.findFirstByOrderByIdDesc()

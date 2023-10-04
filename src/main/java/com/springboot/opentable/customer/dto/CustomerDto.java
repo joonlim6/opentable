@@ -1,6 +1,6 @@
-package com.springboot.opentable.manager.dto;
+package com.springboot.opentable.customer.dto;
 
-import com.springboot.opentable.manager.domain.Manager;
+import com.springboot.opentable.customer.domain.Customer;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,17 +13,15 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ManagerDto {
+public class CustomerDto {
     private Long userId;
     private String email;
-    private Boolean isPartner;
     private LocalDateTime registeredAt;
 
-    public static ManagerDto fromEntity(Manager manager) {
-        return ManagerDto.builder()
+    public static CustomerDto fromEntity(Customer manager) {
+        return CustomerDto.builder()
             .userId(manager.getId())
             .email(manager.getEmail())
-            .isPartner(manager.getIsPartner())
             .registeredAt(manager.getRegisteredAt())
             .build();
     }

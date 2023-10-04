@@ -1,6 +1,6 @@
 package com.springboot.opentable.manager.controller;
 
-import com.springboot.opentable.manager.dto.CreateAccount;
+import com.springboot.opentable.manager.dto.SignUpManager;
 import com.springboot.opentable.manager.service.ManagerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,9 +15,9 @@ public class ManagerController {
     private final ManagerService managerService;
 
     @PostMapping
-    public CreateAccount.Response createAccount(@RequestBody CreateAccount.Request request) {
-        return CreateAccount.Response.from(
-            managerService.createAccount(request.getEmail(),
+    public SignUpManager.Response signUpManager(@RequestBody SignUpManager.Request request) {
+        return SignUpManager.Response.from(
+            managerService.signUpManager(request.getEmail(),
                 request.getPassword(),
                 request.getIsPartner())
         );
