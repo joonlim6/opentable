@@ -6,6 +6,9 @@ import com.springboot.opentable.store.domain.Store;
 import com.springboot.opentable.store.dto.StoreDto;
 import com.springboot.opentable.store.repository.StoreRepository;
 import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,5 +42,14 @@ public class StoreService {
                 .registeredAt(LocalDateTime.now())
                 .build())
         );
+    }
+
+    @Transactional
+    public List<StoreDto> getStoresByKeyword(String keyword) {
+        List<Store> accounts = storeRepository.findByName(keyword);
+
+        return accounts.stream()
+            .map(StoreDto::fromEntity)
+            .collect(Collectors.toList());
     }
 }
