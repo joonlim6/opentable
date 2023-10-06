@@ -8,17 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-public class MakeReservation {
-    @Getter
-    @Setter
-    @AllArgsConstructor
-    @Builder
-    public static class Request {
-        private Long customerId;
-        private Long storeId;
-
-        private LocalDateTime reservationDateTime;
-    }
+public class CheckIn {
 
     @Getter
     @Setter
@@ -32,8 +22,8 @@ public class MakeReservation {
         private LocalDateTime reservationDateTime;
         private ReservationStatus status;
 
-        public static Response from(ReservationDto reservationDto) {
-            return Response.builder()
+        public static MakeReservation.Response from(ReservationDto reservationDto) {
+            return MakeReservation.Response.builder()
                 .reservationId(reservationDto.getReservationId())
                 .storeId(reservationDto.getStoreId())
                 .storeName(reservationDto.getStoreName())
