@@ -18,11 +18,11 @@ public class CustomerDto {
     private String email;
     private LocalDateTime registeredAt;
 
-    public static CustomerDto fromEntity(Customer manager) {
+    public static CustomerDto fromEntity(Customer customer) {
         return CustomerDto.builder()
-            .userId(manager.getId())
-            .email(manager.getEmail())
-            .registeredAt(manager.getRegisteredAt())
+            .userId(customer.getId())
+            .email(customer.getEmail())
+            .registeredAt(customer.getRegisteredAt())
             .build();
     }
 }
