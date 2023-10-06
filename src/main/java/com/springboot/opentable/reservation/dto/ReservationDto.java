@@ -16,17 +16,17 @@ import lombok.Setter;
 @Builder
 public class ReservationDto {
     private Long reservationId;
-    private Long storeId;
     private String storeName;
     private LocalDateTime reservationDateTime;
+    private LocalDateTime arrivedAt;
     private ReservationStatus status;
 
     public static ReservationDto fromEntity(Reservation reservation) {
         return ReservationDto.builder()
             .reservationId(reservation.getId())
-            .storeId(reservation.getStore().getId())
             .storeName(reservation.getStore().getName())
             .reservationDateTime(reservation.getReservationDateTime())
+            .arrivedAt(reservation.getArrivedAt())
             .status(reservation.getStatus())
             .build();
     }

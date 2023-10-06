@@ -3,11 +3,16 @@ package com.springboot.opentable.reservation.service;
 import static com.springboot.opentable.exception.ErrorCode.CUSTOMER_ALREADY_ARRIVED;
 import static com.springboot.opentable.exception.ErrorCode.DUPLICATE_RESERVATION;
 import static com.springboot.opentable.exception.ErrorCode.LATE_CHECK_IN;
+import static com.springboot.opentable.exception.ErrorCode.NO_SUCH_CUSTOMER;
+import static com.springboot.opentable.exception.ErrorCode.NO_SUCH_RESERVATION;
+import static com.springboot.opentable.exception.ErrorCode.NO_SUCH_STORE;
 import static com.springboot.opentable.exception.ErrorCode.RESERVATION_ALREADY_CANCELLED;
 
 import com.springboot.opentable.customer.domain.Customer;
 import com.springboot.opentable.customer.repository.CustomerRepository;
+import com.springboot.opentable.exception.CustomerException;
 import com.springboot.opentable.exception.ReservationException;
+import com.springboot.opentable.exception.StoreException;
 import com.springboot.opentable.reservation.domain.Reservation;
 import com.springboot.opentable.reservation.dto.ReservationDto;
 import com.springboot.opentable.reservation.repository.ReservationRepository;
@@ -30,8 +35,10 @@ public class ReservationService {
 
     @Transactional
     public ReservationDto makeReservation(Long customerId, Long storeId, LocalDateTime reservationDateTime) {
-        Customer customer = customerRepository.findById(customerId).orElseThrow();
-        Store store = storeRepository.findById(storeId).orElseThrow();
+        Customer customer = customerRepository.findById(customerId)
+            .orElseThrow(() -> new CustomerException(NO_SUCH_CUSTOMER));
+        Store store = storeRepository.findById(storeId)
+            .orElseThrow(() -> new StoreException(NO_SUCH_STORE));
 
         Optional<Reservation> duplicate = reservationRepository.findByStoreAndCustomerAndReservationDateTime(store, customer, reservationDateTime);
 
@@ -54,9 +61,9 @@ public class ReservationService {
         );
     }
 
+    @Transactional
     public ReservationDto checkIn(Long reservationId) {
-        Reservation reservation = reservationRepository.findById(reservationId)
-            .orElseThrow();
+        Reservation reservation = getReservation(reservationId);
 
         checkStatus(reservation);
 
@@ -74,6 +81,36 @@ public class ReservationService {
         );
     }
 
+    @Transactional
+    public ReservationDto updateReservation(Long reservationId, Long storeId, LocalDateTime reservationDateTime) {
+        Reservation reservation = getReservation(reservationId);
+
+        if(!reservation.getStore().getId().equals(storeId)) {
+            Store store = storeRepository.findById(storeId)
+                .orElseThrow(() -> new StoreException(NO_SUCH_STORE));
+            reservation.setStore(store);
+        }
+
+        if(!reservation.getReservationDateTime().equals(reservationDateTime)) {
+            reservation.setReservationDateTime(reservationDateTime);
+        }
+
+        return ReservationDto.fromEntity(
+            reservationRepository.save(reservation)
+        );
+    }
+
+    @Transactional
+    public ReservationDto cancelReservation(Long reservationId) {
+        Reservation reservation = getReservation(reservationId);
+
+        reservation.setStatus(ReservationStatus.CANCELLED);
+
+        return ReservationDto.fromEntity(
+            reservationRepository.save(reservation)
+        );
+    }
+
     public void checkStatus(Reservation reservation) {
         if(reservation.getStatus() == ReservationStatus.CANCELLED) {
             throw new ReservationException(RESERVATION_ALREADY_CANCELLED);
@@ -83,4 +120,12 @@ public class ReservationService {
             throw new ReservationException(CUSTOMER_ALREADY_ARRIVED);
         }
     }
+
+    public Reservation getReservation(Long reservationId) {
+        Reservation reservation = reservationRepository.findById(reservationId)
+            .orElseThrow(() -> new ReservationException(NO_SUCH_RESERVATION));
+
+        return reservation;
+    }
+
 }

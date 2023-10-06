@@ -9,7 +9,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 public class CheckIn {
-
     @Getter
     @Setter
     @NoArgsConstructor
@@ -17,17 +16,17 @@ public class CheckIn {
     @Builder
     public static class Response {
         private Long reservationId;
-        private Long storeId;
         private String storeName;
         private LocalDateTime reservationDateTime;
+        private LocalDateTime arrivedAt;
         private ReservationStatus status;
 
-        public static MakeReservation.Response from(ReservationDto reservationDto) {
-            return MakeReservation.Response.builder()
+        public static CheckIn.Response from(ReservationDto reservationDto) {
+            return Response.builder()
                 .reservationId(reservationDto.getReservationId())
-                .storeId(reservationDto.getStoreId())
                 .storeName(reservationDto.getStoreName())
                 .reservationDateTime(reservationDto.getReservationDateTime())
+                .arrivedAt(reservationDto.getArrivedAt())
                 .status(reservationDto.getStatus())
                 .build();
         }
