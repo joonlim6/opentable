@@ -1,13 +1,16 @@
 package com.springboot.opentable.store.service;
 
+import com.springboot.opentable.exception.ErrorCode;
+import com.springboot.opentable.exception.ManagerException;
+import com.springboot.opentable.exception.StoreException;
 import com.springboot.opentable.manager.domain.Manager;
 import com.springboot.opentable.manager.repository.ManagerRepository;
 import com.springboot.opentable.store.domain.Store;
 import com.springboot.opentable.store.dto.StoreDto;
 import com.springboot.opentable.store.repository.StoreRepository;
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,13 +25,19 @@ public class StoreService {
     @Transactional
     public StoreDto registerStore(Long managerId, String name, String location, String description) {
         Manager manager = managerRepository.findById(managerId)
-            .orElseThrow();
+            .orElseThrow(() -> new ManagerException(ErrorCode.NO_SUCH_MANAGER));
 
         if(!manager.getIsPartner()) {
-            throw new RuntimeException("Logged in manager is not a partner");
+            throw new ManagerException(ErrorCode.NOT_A_PARTNER);
         }
 
-        Long newId = managerRepository.findFirstByOrderByIdDesc()
+        Optional<Store> duplicate = storeRepository.findByManagerAndName(manager, name);
+
+        if(duplicate.isPresent()) {
+            throw new StoreException(ErrorCode.DUPLICATE_STORE);
+        }
+
+        Long newId = storeRepository.findFirstByOrderByIdDesc()
             .map(store -> store.getId() + 1)
             .orElse(1L);
 
