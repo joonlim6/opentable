@@ -54,6 +54,7 @@ public class StoreController {
             .map(StoreReviewDto -> ReviewInfo.builder()
                 .storeId(StoreReviewDto.getStoreId())
                 .customerEmail(StoreReviewDto.getCustomerEmail())
+                .stars(StoreReviewDto.getStars())
                 .reviewText(StoreReviewDto.getReviewText())
                 .build())
             .collect(Collectors.toList());

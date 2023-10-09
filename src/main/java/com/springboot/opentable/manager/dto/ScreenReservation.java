@@ -1,5 +1,6 @@
-package com.springboot.opentable.reservation.dto;
+package com.springboot.opentable.manager.dto;
 
+import com.springboot.opentable.reservation.dto.ReservationDto;
 import com.springboot.opentable.reservation.type.ReservationStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

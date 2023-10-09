@@ -1,23 +1,17 @@
 package com.springboot.opentable.reservation.service;
 
-import static com.springboot.opentable.exception.ErrorCode.CUSTOMER_ALREADY_ARRIVED;
-import static com.springboot.opentable.exception.ErrorCode.DENIED_RESERVATION;
 import static com.springboot.opentable.exception.ErrorCode.DUPLICATE_RESERVATION;
-import static com.springboot.opentable.exception.ErrorCode.INVALID_DECISION;
 import static com.springboot.opentable.exception.ErrorCode.LATE_CHECK_IN;
-import static com.springboot.opentable.exception.ErrorCode.NOT_IN_CHARGE;
 import static com.springboot.opentable.exception.ErrorCode.NO_SUCH_CUSTOMER;
 import static com.springboot.opentable.exception.ErrorCode.NO_SUCH_RESERVATION;
 import static com.springboot.opentable.exception.ErrorCode.NO_SUCH_STORE;
-import static com.springboot.opentable.exception.ErrorCode.RESERVATION_ALREADY_CANCELLED;
+import static com.springboot.opentable.exception.ErrorCode.RESERVATION_UNAPPROVED;
 
 import com.springboot.opentable.customer.domain.Customer;
 import com.springboot.opentable.customer.repository.CustomerRepository;
 import com.springboot.opentable.exception.CustomerException;
-import com.springboot.opentable.exception.ManagerException;
 import com.springboot.opentable.exception.ReservationException;
 import com.springboot.opentable.exception.StoreException;
-import com.springboot.opentable.manager.domain.Manager;
 import com.springboot.opentable.reservation.domain.Reservation;
 import com.springboot.opentable.reservation.dto.ReservationDto;
 import com.springboot.opentable.reservation.repository.ReservationRepository;
@@ -61,7 +55,7 @@ public class ReservationService {
                 .store(store)
                 .customer(customer)
                 .reservationDateTime(reservationDateTime)
-                .status(ReservationStatus.CONFIRMED)
+                .status(ReservationStatus.REQUESTED)
                 .build())
         );
     }
@@ -70,7 +64,10 @@ public class ReservationService {
     public ReservationDto checkIn(Long reservationId) {
         Reservation reservation = getReservation(reservationId);
 
-        checkStatus(reservation);
+        // 매니저가 예약 승인을 했어야 체크인이 가능함
+        if(reservation.getStatus() != ReservationStatus.APPROVED) {
+            throw new ReservationException(RESERVATION_UNAPPROVED);
+        }
 
         LocalDateTime curr = LocalDateTime.now();
 
@@ -116,42 +113,19 @@ public class ReservationService {
         );
     }
 
-
-    @Transactional
-    public ReservationDto screenReservation(Long reservationId, Long managerId, String decision) {
-        Reservation reservation = getReservation(reservationId);
-        Manager manager = reservation.getStore().getManager();
-
-        if (manager.getId() != managerId) {
-            throw new ManagerException(NOT_IN_CHARGE);
-        }
-
-        if (decision.equalsIgnoreCase("approve")) {
-            reservation.setStatus(ReservationStatus.APPROVED);
-        }   else if (decision.equalsIgnoreCase("refuse")) {
-            reservation.setStatus(ReservationStatus.REFUSED);
-        }   else {
-            throw new ManagerException(INVALID_DECISION);
-        }
-
-        return ReservationDto.fromEntity(
-            reservationRepository.save(reservation)
-        );
-    }
-
-    public void checkStatus(Reservation reservation) {
-        if(reservation.getStatus() == ReservationStatus.CANCELLED) {
-            throw new ReservationException(RESERVATION_ALREADY_CANCELLED);
-        }
-
-        if(reservation.getStatus() == ReservationStatus.REFUSED) {
-            throw new ReservationException(DENIED_RESERVATION);
-        }
-
-        if(reservation.getStatus() == ReservationStatus.ARRIVED) {
-            throw new ReservationException(CUSTOMER_ALREADY_ARRIVED);
-        }
-    }
+//    public void checkStatus(Reservation reservation) {
+//        if(reservation.getStatus() == ReservationStatus.CANCELLED) {
+//            throw new ReservationException(RESERVATION_ALREADY_CANCELLED);
+//        }
+//
+//        if(reservation.getStatus() == ReservationStatus.REFUSED) {
+//            throw new ReservationException(DENIED_RESERVATION);
+//        }
+//
+//        if(reservation.getStatus() == ReservationStatus.ARRIVED) {
+//            throw new ReservationException(CUSTOMER_ALREADY_ARRIVED);
+//        }
+//    }
 
     public Reservation getReservation(Long reservationId) {
         Reservation reservation = reservationRepository.findById(reservationId)

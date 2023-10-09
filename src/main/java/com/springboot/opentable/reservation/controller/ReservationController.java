@@ -3,7 +3,7 @@ package com.springboot.opentable.reservation.controller;
 import com.springboot.opentable.reservation.dto.CancelReservation;
 import com.springboot.opentable.reservation.dto.CheckIn;
 import com.springboot.opentable.reservation.dto.MakeReservation;
-import com.springboot.opentable.reservation.dto.ScreenReservation;
+import com.springboot.opentable.manager.dto.ScreenReservation;
 import com.springboot.opentable.reservation.dto.UpdateReservation;
 import com.springboot.opentable.reservation.service.ReservationService;
 import lombok.RequiredArgsConstructor;
@@ -56,14 +56,14 @@ public class ReservationController {
         );
     }
 
-    @PatchMapping("/screen")
-    public ScreenReservation.Response screenReservation(@RequestBody ScreenReservation.Request request) {
-        return ScreenReservation.Response.from(
-            reservationService.screenReservation(
-                request.getReservationId(),
-                request.getManagerId(),
-                request.getDecision()
-            )
-        );
-    }
+//    @PatchMapping("/screen")
+//    public ScreenReservation.Response screenReservation(@RequestBody ScreenReservation.Request request) {
+//        return ScreenReservation.Response.from(
+//            reservationService.screenReservation(
+//                request.getReservationId(),
+//                request.getManagerId(),
+//                request.getDecision()
+//            )
+//        );
+//    }
 }

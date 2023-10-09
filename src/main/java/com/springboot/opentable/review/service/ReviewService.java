@@ -7,6 +7,7 @@ import com.springboot.opentable.reservation.domain.Reservation;
 import com.springboot.opentable.reservation.repository.ReservationRepository;
 import com.springboot.opentable.reservation.type.ReservationStatus;
 import com.springboot.opentable.review.domain.Review;
+import com.springboot.opentable.review.dto.DeleteReview;
 import com.springboot.opentable.review.dto.ReviewDto;
 import com.springboot.opentable.review.repository.ReviewRepository;
 import java.time.LocalDateTime;
@@ -22,7 +23,7 @@ public class ReviewService {
     private final ReservationRepository reservationRepository;
 
     @Transactional
-    public ReviewDto leaveReview(Long reservationId, String reviewText) {
+    public ReviewDto leaveReview(Long reservationId, Integer stars, String reviewText) {
         Reservation reservation = reservationRepository.findById(reservationId)
             .orElseThrow(() -> new ReservationException(ErrorCode.NO_SUCH_RESERVATION));
 
@@ -50,10 +51,42 @@ public class ReviewService {
                     .reservation(reservation)
                     .customer(reservation.getCustomer())
                     .store(reservation.getStore())
+                    .stars(stars)
                     .reviewText(reviewText)
                     .reviewedAt(LocalDateTime.now())
                     .build()
             )
         );
+    }
+
+    @Transactional
+    public ReviewDto updateReview(Long reviewId, Long customerId, Integer stars, String reviewText) {
+        Review review = getReview(reviewId);
+
+        if(review.getCustomer().getId() != customerId) {
+            throw new ReviewException(ErrorCode.NOT_YOUR_REVIEW);
+        }
+
+        review.setStars(stars);
+        review.setReviewText(reviewText);
+
+        return ReviewDto.fromEntity(reviewRepository.save(review));
+    }
+
+    @Transactional
+    public DeleteReview.Response deleteReview(Long reviewId) {
+        Review review = getReview(reviewId);
+
+        reviewRepository.delete(review);
+
+        return DeleteReview.Response.builder()
+            .reviewId(reviewId)
+            .deleted(true)
+            .build();
+    }
+
+    public Review getReview(Long reviewId) {
+        return reviewRepository.findById(reviewId)
+            .orElseThrow(() -> new ReviewException(ErrorCode.NO_SUCH_REVIEW));
     }
 }

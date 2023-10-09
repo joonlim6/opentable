@@ -16,6 +16,7 @@ import lombok.Setter;
 public class ReviewDto {
     private Long reviewId;
     private Long storeId;
+    private Integer stars;
     private String customerEmail;
     private String reviewText;
     private LocalDateTime reviewedAt;
@@ -24,6 +25,7 @@ public class ReviewDto {
         return ReviewDto.builder()
             .reviewId(review.getId())
             .storeId(review.getStore().getId())
+            .stars(review.getStars())
             .customerEmail(review.getCustomer().getEmail())
             .reviewText(review.getReviewText())
             .reviewedAt(review.getReviewedAt())

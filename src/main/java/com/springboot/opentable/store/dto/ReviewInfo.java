@@ -14,5 +14,6 @@ import lombok.Setter;
 public class ReviewInfo {
     private Long storeId;
     private String customerEmail;
+    private Integer stars;
     private String reviewText;
 }

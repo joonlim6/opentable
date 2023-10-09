@@ -2,6 +2,8 @@ package com.springboot.opentable.customer.service;
 
 import com.springboot.opentable.customer.domain.Customer;
 import com.springboot.opentable.customer.dto.CustomerDto;
+import com.springboot.opentable.customer.dto.DeleteCustomer;
+import com.springboot.opentable.customer.dto.DeleteCustomer.Response;
 import com.springboot.opentable.customer.repository.CustomerRepository;
 import com.springboot.opentable.exception.CustomerException;
 import com.springboot.opentable.exception.ErrorCode;
@@ -37,4 +39,32 @@ public class CustomerService {
                 .build())
         );
     }
+
+    @Transactional
+    public CustomerDto updateCustomer(Long customerId, String password) {
+        Customer customer = getCustomer(customerId);
+
+        customer.setPassword(password);
+        customerRepository.save(customer);
+
+        return CustomerDto.fromEntity(customer);
+    }
+
+    @Transactional
+    public DeleteCustomer.Response deleteCustomer(Long customerId) {
+        Customer customer = getCustomer(customerId);
+
+        customerRepository.delete(customer);
+
+        return DeleteCustomer.Response.builder()
+            .customerId(customerId)
+            .deleted(true)
+            .build();
+    }
+
+    public Customer getCustomer(Long customerId) {
+        return customerRepository.findById(customerId)
+            .orElseThrow(() -> new CustomerException(ErrorCode.NO_SUCH_CUSTOMER));
+    }
+
 }

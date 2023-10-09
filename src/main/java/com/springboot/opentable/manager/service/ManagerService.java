@@ -1,11 +1,21 @@
 package com.springboot.opentable.manager.service;
 
+import static com.springboot.opentable.exception.ErrorCode.CANT_DECIDE;
+import static com.springboot.opentable.exception.ErrorCode.INVALID_DECISION;
+import static com.springboot.opentable.exception.ErrorCode.NOT_IN_CHARGE;
+import static com.springboot.opentable.exception.ErrorCode.NO_SUCH_RESERVATION;
+
 import com.springboot.opentable.exception.ErrorCode;
 import com.springboot.opentable.exception.ManagerException;
+import com.springboot.opentable.exception.ReservationException;
 import com.springboot.opentable.manager.domain.Manager;
 import com.springboot.opentable.manager.dto.DeleteManager;
 import com.springboot.opentable.manager.dto.ManagerDto;
 import com.springboot.opentable.manager.repository.ManagerRepository;
+import com.springboot.opentable.reservation.domain.Reservation;
+import com.springboot.opentable.reservation.dto.ReservationDto;
+import com.springboot.opentable.reservation.repository.ReservationRepository;
+import com.springboot.opentable.reservation.type.ReservationStatus;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class ManagerService {
     private final ManagerRepository managerRepository;
+    private final ReservationRepository reservationRepository;
 
     @Transactional
     public ManagerDto signUpManager(String email, String password, String name, Boolean isPartner) {
@@ -69,6 +80,33 @@ public class ManagerService {
             .build();
     }
 
+    @Transactional
+    public ReservationDto screenReservation(Long reservationId, Long managerId, String decision) {
+        Reservation reservation = reservationRepository.findById(reservationId)
+            .orElseThrow(() -> new ReservationException(NO_SUCH_RESERVATION));
+
+        Manager manager = getManager(managerId);
+
+        if (!reservation.getStore().getManager().equals(manager)) {
+            throw new ManagerException(NOT_IN_CHARGE);
+        }
+
+        if(reservation.getStatus() != ReservationStatus.REQUESTED) {
+            throw new ManagerException(CANT_DECIDE);
+        }
+
+        if (decision.equalsIgnoreCase("approve")) {
+            reservation.setStatus(ReservationStatus.APPROVED);
+        }   else if (decision.equalsIgnoreCase("refuse")) {
+            reservation.setStatus(ReservationStatus.REFUSED);
+        }   else {
+            throw new ManagerException(INVALID_DECISION);
+        }
+
+        return ReservationDto.fromEntity(
+            reservationRepository.save(reservation)
+        );
+    }
 
     public Manager getManager(Long managerId) {
         return managerRepository.findById(managerId)

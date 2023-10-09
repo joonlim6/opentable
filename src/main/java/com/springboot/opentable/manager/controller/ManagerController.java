@@ -4,6 +4,7 @@ import com.springboot.opentable.manager.dto.DeleteManager;
 import com.springboot.opentable.manager.dto.SignUpManager;
 import com.springboot.opentable.manager.dto.UpdateManager;
 import com.springboot.opentable.manager.service.ManagerService;
+import com.springboot.opentable.manager.dto.ScreenReservation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -46,6 +47,17 @@ public class ManagerController {
             request.getManagerId(),
             request.getEmail(),
             request.getPassword()
+        );
+    }
+
+    @PatchMapping("/screen")
+    public ScreenReservation.Response screenReservation(@RequestBody ScreenReservation.Request request) {
+        return ScreenReservation.Response.from(
+            managerService.screenReservation(
+                request.getReservationId(),
+                request.getManagerId(),
+                request.getDecision()
+            )
         );
     }
 }

@@ -1,7 +1,7 @@
 package com.springboot.opentable.reservation.type;
 
 public enum ReservationStatus {
-    CONFIRMED,
+    REQUESTED,
     CANCELLED,
     APPROVED,
     REFUSED,

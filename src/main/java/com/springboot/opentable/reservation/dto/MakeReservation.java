@@ -1,5 +1,6 @@
 package com.springboot.opentable.reservation.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.springboot.opentable.reservation.type.ReservationStatus;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
@@ -17,6 +18,7 @@ public class MakeReservation {
         private Long customerId;
         private Long storeId;
 
+        @JsonFormat(pattern="yyyy-MM-dd'T'HH:mm:ss")
         private LocalDateTime reservationDateTime;
     }
 
@@ -28,7 +30,10 @@ public class MakeReservation {
     public static class Response {
         private Long reservationId;
         private String storeName;
+
+        @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
         private LocalDateTime reservationDateTime;
+
         private ReservationStatus status;
 
         public static Response from(ReservationDto reservationDto) {
