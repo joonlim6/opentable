@@ -49,7 +49,6 @@ public class ReviewService {
                 Review.builder()
                     .id(newId)
                     .reservation(reservation)
-                    .customer(reservation.getCustomer())
                     .store(reservation.getStore())
                     .stars(stars)
                     .reviewText(reviewText)
@@ -63,7 +62,7 @@ public class ReviewService {
     public ReviewDto updateReview(Long reviewId, Long customerId, Integer stars, String reviewText) {
         Review review = getReview(reviewId);
 
-        if(review.getCustomer().getId() != customerId) {
+        if(review.getReservation().getCustomer().getId() != customerId) {
             throw new ReviewException(ErrorCode.NOT_YOUR_REVIEW);
         }
 

@@ -26,7 +26,7 @@ public class ReviewDto {
             .reviewId(review.getId())
             .storeId(review.getStore().getId())
             .stars(review.getStars())
-            .customerEmail(review.getCustomer().getEmail())
+            .customerEmail(review.getReservation().getCustomer().getEmail())
             .reviewText(review.getReviewText())
             .reviewedAt(review.getReviewedAt())
             .build();

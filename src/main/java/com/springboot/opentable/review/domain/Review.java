@@ -29,11 +29,8 @@ public class Review {
     private Long id;
 
     @OneToOne
+    @JoinColumn(name = "reservation_id")
     private Reservation reservation;
-
-    @ManyToOne
-    @JoinColumn(name = "customer_id")
-    private Customer customer;
 
     @ManyToOne
     @JoinColumn(name = "store_id")

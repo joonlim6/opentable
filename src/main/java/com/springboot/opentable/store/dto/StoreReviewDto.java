@@ -1,7 +1,6 @@
 package com.springboot.opentable.store.dto;
 
 import com.springboot.opentable.review.domain.Review;
-import com.springboot.opentable.store.domain.Store;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -22,7 +21,7 @@ public class StoreReviewDto {
     public static StoreReviewDto fromEntity(Review review) {
         return StoreReviewDto.builder()
             .storeId(review.getStore().getId())
-            .customerEmail(review.getCustomer().getEmail())
+            .customerEmail(review.getReservation().getCustomer().getEmail())
             .stars(review.getStars())
             .reviewText(review.getReviewText())
             .build();
