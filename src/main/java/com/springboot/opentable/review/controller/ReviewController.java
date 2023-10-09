@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class ReviewController {
     private final ReviewService reviewService;
 
+    // 리뷰 작성 (별점 포함)
     @PostMapping()
     public LeaveReview.Response leaveReview(@RequestBody LeaveReview.Request request) {
         return LeaveReview.Response.from(
@@ -30,6 +31,7 @@ public class ReviewController {
         );
     }
 
+    // 리뷰 수정
     @PatchMapping("/update")
     public UpdateReview.Response updateReview(@RequestBody UpdateReview.Request request) {
         return UpdateReview.Response.from(
@@ -42,6 +44,7 @@ public class ReviewController {
         );
     }
 
+    // 리뷰 삭제
     @DeleteMapping("/delete/{review_id}")
     public DeleteReview.Response deleteReview(@PathVariable Long review_id) {
         return reviewService.deleteReview(review_id);

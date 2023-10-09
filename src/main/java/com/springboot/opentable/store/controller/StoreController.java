@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class StoreController {
     private final StoreService storeService;
 
+    // 매장 등록
     @PostMapping
     public RegisterStore.Response registerStore(@RequestBody RegisterStore.Request request) {
         return RegisterStore.Response.from(
@@ -37,6 +38,7 @@ public class StoreController {
         );
     }
 
+    // 매장 검색
     @GetMapping
     public List<StoreInfo> getStoresByKeyword(@RequestParam("keyword") String keyword) {
         return storeService.getStoresByKeyword(keyword).stream()
@@ -48,6 +50,7 @@ public class StoreController {
             .collect(Collectors.toList());
     }
 
+    // 매장의 리뷰 목록 확인
     @GetMapping("/review/{store_id}")
     public List<ReviewInfo> getStoreReviews(@PathVariable Long store_id) {
         return storeService.getStoreReviews(store_id).stream()
@@ -60,6 +63,7 @@ public class StoreController {
             .collect(Collectors.toList());
     }
 
+    // 매장 정보 수정
     @PatchMapping("/update")
     public UpdateStore.Response updateStore(@RequestBody UpdateStore.Request request) {
         return UpdateStore.Response.from(
@@ -72,6 +76,7 @@ public class StoreController {
         );
     }
 
+    // 매장 등록 철회
     @DeleteMapping("/delete/{store_id}")
     public DeleteStore.Response deleteStore(@PathVariable Long store_id) {
         return storeService.deleteStore(store_id);

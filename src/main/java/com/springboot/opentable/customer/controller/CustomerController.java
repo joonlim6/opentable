@@ -4,6 +4,7 @@ import com.springboot.opentable.customer.dto.DeleteCustomer;
 import com.springboot.opentable.customer.dto.SignUpCustomer;
 import com.springboot.opentable.customer.dto.UpdateCustomer;
 import com.springboot.opentable.customer.service.CustomerService;
+import com.springboot.opentable.manager.dto.DeleteManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class CustomerController {
     private final CustomerService customerService;
 
+    // 고객 회원 가입
     @PostMapping
     public SignUpCustomer.Response signUpCustomer(@RequestBody SignUpCustomer.Request request) {
         return SignUpCustomer.Response.from(
@@ -29,6 +31,7 @@ public class CustomerController {
         );
     }
 
+    // 고객 회원 정보 수정
     @PatchMapping("/update")
     public UpdateCustomer.Response updateCustomer(@RequestBody UpdateCustomer.Request request) {
         return UpdateCustomer.Response.from(
@@ -39,8 +42,13 @@ public class CustomerController {
         );
     }
 
-    @DeleteMapping("/delete/{customer_id}")
-    public DeleteCustomer.Response deleteCustomer(@PathVariable Long customer_id) {
-        return customerService.deleteCustomer(customer_id);
+    // 고객 회원 탈퇴
+    @DeleteMapping("/delete")
+    public DeleteCustomer.Response deleteCustomer(@RequestBody DeleteCustomer.Request request) {
+        return customerService.deleteCustomer(
+            request.getCustomerId(),
+            request.getEmail(),
+            request.getPassword()
+        );
     }
 }

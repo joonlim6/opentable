@@ -32,6 +32,7 @@ public class ManagerService {
     public ManagerDto signUpManager(String email, String password, String name, Boolean isPartner) {
         Optional<Manager> duplicate = managerRepository.findByEmail(email);
 
+        // 회원 가입 시 이메일 중복 불가
         if(duplicate.isPresent()) {
             throw new ManagerException(ErrorCode.DUPLICATE_EMAIL_MANAGER);
         }
@@ -56,6 +57,7 @@ public class ManagerService {
     public ManagerDto updateManager(Long managerId, String password, Boolean isPartner) {
         Manager manager = getManager(managerId);
 
+        // 비밀 번호, 파트너 회원 여부 수정 가능
         manager.setPassword(password);
         manager.setIsPartner(isPartner);
 
@@ -68,6 +70,7 @@ public class ManagerService {
     public DeleteManager.Response deleteManager(Long managerId, String email, String password) {
         Manager manager = getManager(managerId);
 
+        // 이메일, 비밀 번호 불일치 시 회원 탈퇴 불가능
         if(!manager.getEmail().equals(email) || !manager.getPassword().equals(password)) {
             throw new ManagerException(ErrorCode.WRONG_EMAIL_OR_PASSWORD);
         }
@@ -87,14 +90,17 @@ public class ManagerService {
 
         Manager manager = getManager(managerId);
 
+        // 해당 예약의 매장이 매너저 관할이 아니면 예약 승인/거절 불가
         if (!reservation.getStore().getManager().equals(manager)) {
             throw new ManagerException(NOT_IN_CHARGE);
         }
 
+        // 예약 신청 상태일 때만 승인/거절 가능
         if(reservation.getStatus() != ReservationStatus.REQUESTED) {
             throw new ManagerException(CANT_DECIDE);
         }
 
+        // 승인/거절만 가능, 다른 옵션은 exception
         if (decision.equalsIgnoreCase("approve")) {
             reservation.setStatus(ReservationStatus.APPROVED);
         }   else if (decision.equalsIgnoreCase("refuse")) {

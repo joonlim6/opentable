@@ -29,10 +29,12 @@ public class ReviewService {
 
         Optional<Review> duplicate = reviewRepository.findByReservation(reservation);
 
+        // 예약 당 한 개의 리뷰만 남길 수 있음
         if(duplicate.isPresent()) {
             throw new ReviewException(ErrorCode.DUPLICATE_REVIEW);
         }
 
+        // 방문이 확인 됐을 시에만 리뷰 작성 가능
         if(reservation.getStatus() != ReservationStatus.ARRIVED) {
             throw new ReviewException(ErrorCode.RESERVATION_INCOMPLETE);
         }
@@ -40,14 +42,14 @@ public class ReviewService {
         reservation.setStatus(ReservationStatus.COMPLETED);
         reservationRepository.save(reservation);
 
-        Long newId = reviewRepository.findFirstByOrderByIdDesc()
+        Long reviewId = reviewRepository.findFirstByOrderByIdDesc()
             .map(review -> review.getId() + 1)
             .orElse(1L);
 
         return ReviewDto.fromEntity(
             reviewRepository.save(
                 Review.builder()
-                    .id(newId)
+                    .id(reviewId)
                     .reservation(reservation)
                     .store(reservation.getStore())
                     .stars(stars)
@@ -62,10 +64,12 @@ public class ReviewService {
     public ReviewDto updateReview(Long reviewId, Long customerId, Integer stars, String reviewText) {
         Review review = getReview(reviewId);
 
+        // 해당 리뷰의 고객이 일치해야 수정 가능
         if(review.getReservation().getCustomer().getId() != customerId) {
             throw new ReviewException(ErrorCode.NOT_YOUR_REVIEW);
         }
 
+        // 별점 및 리뷰 내용 수정 가능
         review.setStars(stars);
         review.setReviewText(reviewText);
 

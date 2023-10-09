@@ -41,17 +41,18 @@ public class ReservationService {
 
         Optional<Reservation> duplicate = reservationRepository.findByStoreAndCustomerAndReservationDateTime(store, customer, reservationDateTime);
 
+        // 동일 고객이 동일 매장에 동일 시간 예약 불가
         if(duplicate.isPresent()) {
             throw new ReservationException(DUPLICATE_RESERVATION);
         }
 
-        Long newId = reservationRepository.findFirstByOrderByIdDesc()
+        Long reservationId = reservationRepository.findFirstByOrderByIdDesc()
             .map(reservation -> reservation .getId() + 1)
             .orElse(1L);
 
         return ReservationDto.fromEntity(
             reservationRepository.save(Reservation.builder()
-                .id(newId)
+                .id(reservationId)
                 .store(store)
                 .customer(customer)
                 .reservationDateTime(reservationDateTime)
@@ -64,13 +65,14 @@ public class ReservationService {
     public ReservationDto checkIn(Long reservationId) {
         Reservation reservation = getReservation(reservationId);
 
-        // 매니저가 예약 승인을 했어야 체크인이 가능함
+        // 점장이 예약 승인을 했어야 방문 확인이 가능
         if(reservation.getStatus() != ReservationStatus.APPROVED) {
             throw new ReservationException(RESERVATION_UNAPPROVED);
         }
 
         LocalDateTime curr = LocalDateTime.now();
 
+        // 예약 10 분전에 도착 했어야 방문 확인이 가능
         if(curr.until(reservation.getReservationDateTime(), ChronoUnit.SECONDS) < 600) {
             throw new ReservationException(LATE_CHECK_IN);
         }
@@ -87,12 +89,14 @@ public class ReservationService {
     public ReservationDto updateReservation(Long reservationId, Long storeId, LocalDateTime reservationDateTime) {
         Reservation reservation = getReservation(reservationId);
 
+        // 매장 변경 가능
         if(!reservation.getStore().getId().equals(storeId)) {
             Store store = storeRepository.findById(storeId)
                 .orElseThrow(() -> new StoreException(NO_SUCH_STORE));
             reservation.setStore(store);
         }
 
+        // 예약 일 및 시간 수정 가능
         if(!reservation.getReservationDateTime().equals(reservationDateTime)) {
             reservation.setReservationDateTime(reservationDateTime);
         }
@@ -112,20 +116,6 @@ public class ReservationService {
             reservationRepository.save(reservation)
         );
     }
-
-//    public void checkStatus(Reservation reservation) {
-//        if(reservation.getStatus() == ReservationStatus.CANCELLED) {
-//            throw new ReservationException(RESERVATION_ALREADY_CANCELLED);
-//        }
-//
-//        if(reservation.getStatus() == ReservationStatus.REFUSED) {
-//            throw new ReservationException(DENIED_RESERVATION);
-//        }
-//
-//        if(reservation.getStatus() == ReservationStatus.ARRIVED) {
-//            throw new ReservationException(CUSTOMER_ALREADY_ARRIVED);
-//        }
-//    }
 
     public Reservation getReservation(Long reservationId) {
         Reservation reservation = reservationRepository.findById(reservationId)

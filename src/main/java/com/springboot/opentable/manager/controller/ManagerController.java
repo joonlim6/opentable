@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class ManagerController {
     private final ManagerService managerService;
 
+    // 점장 회원 가입
     @PostMapping
     public SignUpManager.Response signUpManager(@RequestBody SignUpManager.Request request) {
         return SignUpManager.Response.from(
@@ -30,6 +31,7 @@ public class ManagerController {
         );
     }
 
+    // 점장 회원 정보 수정
     @PatchMapping("/update")
     public UpdateManager.Response updateManager(@RequestBody UpdateManager.Request request) {
         return UpdateManager.Response.from(
@@ -41,6 +43,7 @@ public class ManagerController {
         );
     }
 
+    // 점장 회원 탈퇴
     @DeleteMapping("/delete")
     public DeleteManager.Response deleteManager(@RequestBody DeleteManager.Request request) {
         return managerService.deleteManager(
@@ -50,6 +53,7 @@ public class ManagerController {
         );
     }
 
+    // 점장 관할 매장 예약 조회
     @PatchMapping("/screen")
     public ScreenReservation.Response screenReservation(@RequestBody ScreenReservation.Request request) {
         return ScreenReservation.Response.from(

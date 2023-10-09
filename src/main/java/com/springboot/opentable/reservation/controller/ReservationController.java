@@ -3,7 +3,6 @@ package com.springboot.opentable.reservation.controller;
 import com.springboot.opentable.reservation.dto.CancelReservation;
 import com.springboot.opentable.reservation.dto.CheckIn;
 import com.springboot.opentable.reservation.dto.MakeReservation;
-import com.springboot.opentable.manager.dto.ScreenReservation;
 import com.springboot.opentable.reservation.dto.UpdateReservation;
 import com.springboot.opentable.reservation.service.ReservationService;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class ReservationController {
     private final ReservationService reservationService;
 
+    // 예약 신청
     @PostMapping
     public MakeReservation.Response makeReservation(@RequestBody MakeReservation.Request request) {
         return MakeReservation.Response.from(
@@ -31,6 +31,7 @@ public class ReservationController {
         );
     }
 
+    // 도착 후 방문 확인 진행
     @PatchMapping("/checkin/{reservation_id}")
     public CheckIn.Response checkIn(@PathVariable Long reservation_id) {
         return CheckIn.Response.from(
@@ -38,6 +39,7 @@ public class ReservationController {
         );
     }
 
+    // 예약 수정
     @PatchMapping("/update")
     public UpdateReservation.Response updateReservation(@RequestBody UpdateReservation.Request request) {
         return UpdateReservation.Response.from(
@@ -49,6 +51,7 @@ public class ReservationController {
         );
     }
 
+    // 예약 취소
     @PatchMapping("/cancel/{reservation_id}")
     public CancelReservation.Response cancelReservation(@PathVariable Long reservation_id) {
         return CancelReservation.Response.from(
@@ -56,14 +59,4 @@ public class ReservationController {
         );
     }
 
-//    @PatchMapping("/screen")
-//    public ScreenReservation.Response screenReservation(@RequestBody ScreenReservation.Request request) {
-//        return ScreenReservation.Response.from(
-//            reservationService.screenReservation(
-//                request.getReservationId(),
-//                request.getManagerId(),
-//                request.getDecision()
-//            )
-//        );
-//    }
 }

@@ -3,10 +3,10 @@ package com.springboot.opentable.customer.service;
 import com.springboot.opentable.customer.domain.Customer;
 import com.springboot.opentable.customer.dto.CustomerDto;
 import com.springboot.opentable.customer.dto.DeleteCustomer;
-import com.springboot.opentable.customer.dto.DeleteCustomer.Response;
 import com.springboot.opentable.customer.repository.CustomerRepository;
 import com.springboot.opentable.exception.CustomerException;
 import com.springboot.opentable.exception.ErrorCode;
+import com.springboot.opentable.exception.ManagerException;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -22,17 +22,18 @@ public class CustomerService {
     public CustomerDto signUpCustomer(String email, String password) {
         Optional<Customer> duplicate = customerRepository.findByEmail(email);
 
+        // 이메일 중복 불가
         if(duplicate.isPresent()) {
             throw new CustomerException(ErrorCode.DUPLICATE_EMAIL_CUSTOMER);
         }
 
-        Long newId = customerRepository.findFirstByOrderByIdDesc()
+        Long customerId = customerRepository.findFirstByOrderByIdDesc()
             .map(customer -> customer.getId() + 1)
             .orElse(1L);
 
         return CustomerDto.fromEntity(
             customerRepository.save(Customer.builder()
-                .id(newId)
+                .id(customerId)
                 .email(email)
                 .password(password)
                 .registeredAt(LocalDateTime.now())
@@ -44,6 +45,7 @@ public class CustomerService {
     public CustomerDto updateCustomer(Long customerId, String password) {
         Customer customer = getCustomer(customerId);
 
+        // 비밀 번호만 수정 가능
         customer.setPassword(password);
         customerRepository.save(customer);
 
@@ -51,8 +53,13 @@ public class CustomerService {
     }
 
     @Transactional
-    public DeleteCustomer.Response deleteCustomer(Long customerId) {
+    public DeleteCustomer.Response deleteCustomer(Long customerId, String email, String password) {
         Customer customer = getCustomer(customerId);
+
+        // 이메일, 비밀 번호 불일치 시 회원 탈퇴 불가능
+        if(!customer.getEmail().equals(email) || !customer.getPassword().equals(password)) {
+            throw new CustomerException(ErrorCode.WRONG_EMAIL_OR_PASSWORD);
+        }
 
         customerRepository.delete(customer);
 

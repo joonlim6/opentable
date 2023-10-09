@@ -9,6 +9,16 @@ import lombok.Setter;
 public class DeleteCustomer {
     @Getter
     @Setter
+    @AllArgsConstructor
+    @Builder
+    public static class Request {
+        private Long customerId;
+        private String email;
+        private String password;
+    }
+
+    @Getter
+    @Setter
     @NoArgsConstructor
     @AllArgsConstructor
     @Builder

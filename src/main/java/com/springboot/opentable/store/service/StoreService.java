@@ -32,23 +32,25 @@ public class StoreService {
         Manager manager = managerRepository.findById(managerId)
             .orElseThrow(() -> new ManagerException(ErrorCode.NO_SUCH_MANAGER));
 
+        // 매니저가 파트너 등급일 때만 매장 등록 가능
         if(!manager.getIsPartner()) {
             throw new ManagerException(ErrorCode.NOT_A_PARTNER);
         }
 
         Optional<Store> duplicate = storeRepository.findByManagerAndName(manager, name);
 
+        // 이미 등록한 매장은 등록 불가
         if(duplicate.isPresent()) {
             throw new StoreException(ErrorCode.DUPLICATE_STORE);
         }
 
-        Long newId = storeRepository.findFirstByOrderByIdDesc()
+        Long storeId = storeRepository.findFirstByOrderByIdDesc()
             .map(store -> store.getId() + 1)
             .orElse(1L);
 
         return StoreDto.fromEntity(
             storeRepository.save(Store.builder()
-                .id(newId)
+                .id(storeId)
                 .manager(manager)
                 .name(name)
                 .location(location)
@@ -60,6 +62,7 @@ public class StoreService {
 
     @Transactional
     public List<StoreDto> getStoresByKeyword(String keyword) {
+        // 검색 키워드 (대,소문자 무관)가 매장 이름에 포함 됐을 시
         List<Store> stores = storeRepository.findByNameContainsIgnoreCase(keyword);
 
         return stores.stream()
@@ -71,6 +74,7 @@ public class StoreService {
     public List<StoreReviewDto> getStoreReviews(Long storeId) {
         Store store = getStore(storeId);
 
+        // 매장 별로 리뷰 열람 가능
         List<Review> reviews = reviewRepository.findByStore(store);
 
         return reviews.stream()
@@ -82,6 +86,7 @@ public class StoreService {
     public StoreDto updateStore(Long storeId, String name, String location, String description) {
         Store store = getStore(storeId);
 
+        // 매장 명 변경, 위치 이전, 설명 수정
         store.setName(name);
         store.setLocation(location);
         store.setDescription(description);
