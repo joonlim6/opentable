@@ -10,6 +10,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.annotation.CreatedDate;
 
 @Getter
 @Setter
@@ -24,6 +25,9 @@ public class Manager {
 
     private String email;
     private String password;
+    private String name;
+
     private Boolean isPartner;
+
     private LocalDateTime registeredAt;
 }

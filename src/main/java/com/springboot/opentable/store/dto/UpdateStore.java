@@ -7,13 +7,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-public class RegisterStore {
+public class UpdateStore {
     @Getter
     @Setter
     @AllArgsConstructor
     @Builder
     public static class Request {
-        private Long managerId;
+        private Long storeId;
         private String name;
         private String location;
         private String description;
@@ -29,15 +29,13 @@ public class RegisterStore {
         private String name;
         private String location;
         private String description;
-        private LocalDateTime registeredAt;
 
-        public static RegisterStore.Response from(StoreDto storeDto) {
+        public static UpdateStore.Response from(StoreDto storeDto) {
             return Response.builder()
                 .storeId(storeDto.getStoreId())
                 .name(storeDto.getName())
                 .location(storeDto.getLocation())
                 .description(storeDto.getDescription())
-                .registeredAt(storeDto.getRegisteredAt())
                 .build();
         }
     }

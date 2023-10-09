@@ -16,6 +16,7 @@ import lombok.Setter;
 public class ManagerDto {
     private Long userId;
     private String email;
+    private String name;
     private Boolean isPartner;
     private LocalDateTime registeredAt;
 
@@ -23,6 +24,7 @@ public class ManagerDto {
         return ManagerDto.builder()
             .userId(manager.getId())
             .email(manager.getEmail())
+            .name(manager.getName())
             .isPartner(manager.getIsPartner())
             .registeredAt(manager.getRegisteredAt())
             .build();

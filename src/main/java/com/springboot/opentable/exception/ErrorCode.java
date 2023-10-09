@@ -11,6 +11,7 @@ public enum ErrorCode {
     NOT_A_PARTNER("해당 매니저는 파트너 매니저가 아닙니다"),
     NOT_IN_CHARGE("해당 매니저는 이 예약을 취소할 권한이 없습니다"),
     INVALID_DECISION("매니저는 예약을 승인 혹은 거절만 할 수 있습니다"),
+    WRONG_EMAIL_OR_PASSWORD("이메일 혹은 비밀번호를 잘못 기입하셨습니다"),
 
     NO_SUCH_CUSTOMER("등록되지 않은 고객 회원번호입니다"),
     DUPLICATE_EMAIL_CUSTOMER("해당 이메일을 등록한 고객 회원이 이미 존재합니다"),
