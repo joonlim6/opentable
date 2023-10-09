@@ -11,5 +11,5 @@ import org.springframework.stereotype.Repository;
 public interface StoreRepository extends JpaRepository<Store, Long> {
     Optional<Store> findFirstByOrderByIdDesc();
     Optional<Store> findByManagerAndName(Manager manager, String name);
-    List<Store> findByName(String keyword);
+    List<Store> findByNameContainsIgnoreCase(String keyword);
 }

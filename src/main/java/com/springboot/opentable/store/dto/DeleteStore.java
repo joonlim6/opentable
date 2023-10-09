@@ -10,14 +10,6 @@ import lombok.Setter;
 public class DeleteStore {
     @Getter
     @Setter
-    @AllArgsConstructor
-    @Builder
-    public static class Request {
-        private Long storeId;
-    }
-
-    @Getter
-    @Setter
     @NoArgsConstructor
     @AllArgsConstructor
     @Builder

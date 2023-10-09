@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class StoreController {
     private final StoreService storeService;
 
-    @PutMapping
+    @PostMapping
     public RegisterStore.Response registerStore(@RequestBody RegisterStore.Request request) {
         return RegisterStore.Response.from(
             storeService.registerStore(
@@ -71,8 +71,8 @@ public class StoreController {
         );
     }
 
-    @DeleteMapping("/delete")
-    public DeleteStore.Response updateStore(@RequestBody DeleteStore.Request request) {
-        return storeService.deleteStore(request.getStoreId());
+    @DeleteMapping("/delete/{store_id}")
+    public DeleteStore.Response deleteStore(@PathVariable Long store_id) {
+        return storeService.deleteStore(store_id);
     }
 }

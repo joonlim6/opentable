@@ -60,9 +60,9 @@ public class StoreService {
 
     @Transactional
     public List<StoreDto> getStoresByKeyword(String keyword) {
-        List<Store> accounts = storeRepository.findByName(keyword);
+        List<Store> stores = storeRepository.findByNameContainsIgnoreCase(keyword);
 
-        return accounts.stream()
+        return stores.stream()
             .map(StoreDto::fromEntity)
             .collect(Collectors.toList());
     }

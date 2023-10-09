@@ -25,13 +25,13 @@ public class ManagerService {
             throw new ManagerException(ErrorCode.DUPLICATE_EMAIL_MANAGER);
         }
 
-        Long newId = managerRepository.findFirstByOrderByIdDesc()
+        Long managerId = managerRepository.findFirstByOrderByIdDesc()
             .map(manager -> manager.getId() + 1)
             .orElse(1L);
 
         return ManagerDto.fromEntity(
             managerRepository.save(Manager.builder()
-                .id(newId)
+                .id(managerId)
                 .email(email)
                 .password(password)
                 .name(name)
